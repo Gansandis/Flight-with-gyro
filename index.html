@@ -24,7 +24,7 @@ button{font:inherit;font-size:19px;font-weight:700;background:var(--accent);colo
 <body>
 <div id="hud"><div id="rp">ROLL 0 PITCH 0</div><div id="sc">0 ม.</div></div>
 <div id="msg">ชน! เริ่มใหม่</div>
-<div id="tools" hidden><button id="cal">รีเซ็ตมุม</button><button id="fs">เต็มจอ</button></div>
+<div id="tools" hidden><button id="cal">รีเซ็ตมุม</button><button id="inv">สลับขึ้น-ลง</button><button id="fs">เต็มจอ</button></div>
 <div id="menu">
   <h1>Gyro Flight</h1>
   <p>ถือมือถือแนวตั้ง เอียงซ้าย-ขวาเพื่อเลี้ยว ดันหัวเครื่องออกเพื่อพุ่งลง ดึงเข้าหาตัวเพื่อไต่ขึ้น หลบตึกให้ได้ไกลที่สุด</p>
@@ -71,7 +71,7 @@ for(let i=0;i<N;i++){
 
 // state
 let pos=new THREE.Vector3(0,110,0),yaw=0,pitch=0,roll=0,dist=0,speed=55;
-let tRoll=0,tPitch=0,beta0=null,lastBeta=0,gotSensor=false,running=false,crashT=0;
+let inv=1,tRoll=0,tPitch=0,beta0=null,lastBeta=0,gotSensor=false,running=false,crashT=0;
 const rp=document.getElementById("rp"),sc=document.getElementById("sc"),msg=document.getElementById("msg");
 
 function onOrient(e){
@@ -79,7 +79,7 @@ function onOrient(e){
   gotSensor=true; lastBeta=e.beta;
   if(beta0===null)beta0=e.beta;
   tRoll=clamp(e.gamma*D,-1.0,1.0);
-  tPitch=clamp(-(e.beta-beta0)*D,-.9,.9);
+  tPitch=clamp(-inv*(e.beta-beta0)*D,-.9,.9);
 }
 function onPointer(e){
   if(gotSensor)return;
@@ -101,6 +101,7 @@ document.getElementById("go").onclick=async()=>{
   setTimeout(()=>{if(!gotSensor){msg.textContent="ไม่พบเซ็นเซอร์ ลากนิ้วบนจอเพื่อบังคับแทน";msg.style.opacity=1;setTimeout(()=>msg.style.opacity=0,3000)}},1500);
 };
 document.getElementById("cal").onclick=()=>{beta0=lastBeta};
+document.getElementById("inv").onclick=()=>{inv=-inv};
 document.getElementById("fs").onclick=()=>{
   const el=document.documentElement;
   try{(el.requestFullscreen||el.webkitRequestFullscreen).call(el)}catch(err){}
